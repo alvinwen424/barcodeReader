@@ -1,47 +1,57 @@
 // Exported from snack.expo.io
-import Expo from 'expo';
-import React, { Component } from 'react';
-import { Text, View, StyleSheet, Alert } from 'react-native';
-import { Constants, BarCodeScanner, Permissions } from 'expo';
+import Expo from 'expo'
+import React, { Component } from 'react'
+import { Text, View, StyleSheet, Alert } from 'react-native'
+import { Constants, BarCodeScanner, Permissions } from 'expo'
+
+import { validateUserByBarcode } from './sierraValidate'
 
 export default class App extends Component {
   state = {
     hasCameraPermission: null
-  };
+  }
 
   componentDidMount() {
-    this._requestCameraPermission();
+    this._requestCameraPermission()
   }
 
   _requestCameraPermission = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    const { status } = await Permissions.askAsync(Permissions.CAMERA)
     this.setState({
       hasCameraPermission: status === 'granted',
-    });
-  };
+    })
+  }
 
   _handleBarCodeRead = data => {
-    Alert.alert(
-      'Scan successful!',
-      JSON.stringify(data)
-    );
-  };
+    const barcode = JSON.stringify(data)
+    validateUserByBarcode(barcode)
+      .then(patronStatus => {
+        Alert.alert(patronStatus)
+      })
+      .catch(console.error)
+  }
 
   render() {
+    const { hasCameraPermission } = this.state
     return (
       <View style={styles.container}>
-        {this.state.hasCameraPermission === null ?
-          <Text>Requesting for camera permission</Text> :
-          this.state.hasCameraPermission === false ?
-            <Text>Camera permission is not granted</Text> :
-            <BarCodeScanner
-              torchMode="on"
-              onBarCodeRead={this._handleBarCodeRead}
-              style={{ height: 200, width: 200 }}
-            />
+        {hasCameraPermission === null 
+          ? <Text>Requesting for camera permission</Text> 
+          : hasCameraPermission === false 
+            ? <Text>Camera permission is not granted</Text> 
+            : (
+                <View>
+                  <Text>Scan Your Library Card To Validate</Text>
+                  <BarCodeScanner
+                    torchMode="on"
+                    onBarCodeRead={this._handleBarCodeRead}
+                    style={{ height: 400, width: 400 }}
+                  />
+                </View>
+              )
         }
       </View>
-    );
+    )
   }
 }
 
@@ -60,5 +70,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#34495e',
   },
-});
-Expo.registerRootComponent(App);
+})
+Expo.registerRootComponent(App)
