@@ -11,6 +11,24 @@
 
 import axios from 'axios'
 
+// export const turnOn = () => 
+  
+
+
+export const getPatronStatusFromServer = barcode => 
+  axios.get(`http://138.197.230.106:5555/validateUser/${barcode}`)
+    .then(res => res.data)
+    .catch(console.error);
+
+export const getPatronStatusFromLocal = barcode => 
+  axios.get(`http://localhost:5555/validateUser/${barcode}`)
+    .then(res => res.data)
+    .catch(console.error);
+
+
+
+
+
 const tempToken = 'Bearer g4st4seQ8mWdWOoW_-M1jXPVVNcxiGYNA-agQYoBmuyBablev5nl2u9JdzdouJlnXQa-7UvevVq-9HleAcuPyKCK8X6uDp6eeSdy5QO5xV8Ml4eqSgbm42hnqZc4zkh86rVTWshoj7L9bcXoXQkK57Q3Vhasqj2NT3OIVf3Wikk'
 
 const fetchSierraAuthToken = () =>

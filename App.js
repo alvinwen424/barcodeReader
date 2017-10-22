@@ -4,7 +4,7 @@ import React, { Component } from 'react'
 import { Text, View, StyleSheet, Alert } from 'react-native'
 import { Constants, BarCodeScanner, Permissions } from 'expo'
 
-import { validateUserByBarcode } from './sierraValidate'
+import { validateUserByBarcode, getPatronStatusFromServer } from './sierraValidate'
 
 export default class App extends Component {
   state = {
@@ -23,12 +23,26 @@ export default class App extends Component {
   }
 
   _handleBarCodeRead = data => {
-    const barcode = JSON.stringify(data)
-    validateUserByBarcode(barcode)
+    const barcode = data.data
+    // {
+    //   status: 'Validation Successful!',
+    //     message: `Your card expires on ${expDate}`
+    // }
+    console.log('\n\nBARCODE\n\n', barcode)
+    getPatronStatusFromServer(barcode)
       .then(patronStatus => {
-        Alert.alert(patronStatus)
+        Alert.alert(patronStatus.status)
+        Alert.alert(patronStatus.message)
+        console.log(patronStatus)
       })
       .catch(console.error)
+
+    // validateUserByBarcode(barcode)
+    //   .then(patronStatus => {
+    //     Alert.alert('Success')
+    //     console.log(patronStatus)
+    //   })
+    //   .catch(console.error)
   }
 
   render() {
